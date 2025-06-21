@@ -1,115 +1,127 @@
-import Image from "next/image";
-import { Geist, Geist_Mono } from "next/font/google";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+import { useState } from 'react';
+import { useRouter } from 'next/router';
+import { MagnifyingGlassIcon, ClockIcon } from '@heroicons/react/24/outline';
+import { motion } from 'framer-motion';
+import Input from '@/components/Input';
+import Button from '@/components/Button';
+import SplashScreen from '@/components/SplashScreen';
+import InstallPWA from '@/components/InstallPWA';
+import { useSearchHistory } from '@/hooks/useSearchHistory';
 
 export default function Home() {
+  const [showSplash, setShowSplash] = useState(true);
+  const [keyword, setKeyword] = useState('');
+  const [location, setLocation] = useState('');
+  const router = useRouter();
+  const { searchHistory, addSearchQuery } = useSearchHistory();
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (keyword.trim()) {
+      addSearchQuery(keyword.trim(), location.trim());
+      router.push({
+        pathname: '/search',
+        query: { keyword: keyword.trim(), location: location.trim() },
+      });
+    }
+  };
+
+  const handleHistoryItemClick = (keyword: string, location: string) => {
+    router.push({
+      pathname: '/search',
+      query: { keyword, location },
+    });
+  };
+
   return (
-    <div
-      className={`${geistSans.className} ${geistMono.className} grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]`}
-    >
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/pages/index.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+    <>
+      {showSplash ? (
+        <SplashScreen onFinish={() => setShowSplash(false)} />
+      ) : (
+        <div className="flex flex-col items-center justify-start pt-6 pb-20">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="w-full max-w-md mx-auto text-center mb-8"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+              Find Your Next Job
+            </h1>
+            <p className="text-gray-600 dark:text-gray-300">
+              Search for job opportunities that match your skills
+            </p>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="w-full max-w-md mx-auto bg-white dark:bg-gray-800 rounded-xl shadow-app dark:shadow-app-dark p-6 mb-8"
           >
-            Read our docs
-          </a>
+            <form onSubmit={handleSearch}>
+              <Input
+                label="Skills or Keywords"
+                placeholder="React, Laravel, JavaScript..."
+                value={keyword}
+                onChange={(e) => setKeyword(e.target.value)}
+                icon={<MagnifyingGlassIcon className="h-5 w-5 text-gray-400" />}
+                required
+              />
+              <Input
+                label="Location (Optional)"
+                placeholder="City, Country or Remote"
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+              />
+              <Button
+                type="submit"
+                fullWidth
+                size="lg"
+                className="mt-2"
+              >
+                Search Jobs
+              </Button>
+            </form>
+          </motion.div>
+
+          {searchHistory.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="w-full max-w-md mx-auto"
+            >
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">
+                Recent Searches
+              </h2>
+              <div className="space-y-2">
+                {searchHistory.map((item) => (
+                  <div
+                    key={item.id}
+                    onClick={() => handleHistoryItemClick(item.keyword, item.location)}
+                    className="flex items-center p-3 bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+                  >
+                    <ClockIcon className="h-5 w-5 text-gray-400 mr-3" />
+                    <div>
+                      <p className="font-medium text-gray-900 dark:text-white">
+                        {item.keyword}
+                      </p>
+                      {item.location && (
+                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                          {item.location}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          )}
+
+          <InstallPWA />
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+      )}
+    </>
   );
 }
