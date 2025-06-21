@@ -87,7 +87,7 @@ export default function Search() {
   };
 
   return (
-    <div className="flex flex-col pb-20">
+    <div className="flex flex-col pb-20 mt-5">
       <motion.div
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}

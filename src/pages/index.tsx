@@ -38,7 +38,7 @@ export default function Home() {
       {showSplash ? (
         <SplashScreen onFinish={() => setShowSplash(false)} />
       ) : (
-        <div className="flex flex-col items-center justify-start pt-6 pb-20">
+        <div className="flex flex-col items-center justify-start pt-6 pb-20 mt-5">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
