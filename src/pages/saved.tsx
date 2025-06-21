@@ -102,7 +102,7 @@ export default function SavedJobs() {
             No Saved Jobs
           </h2>
           <p className="text-gray-600 dark:text-gray-300 mb-6 max-w-xs">
-            You haven't saved any jobs yet. Search for jobs and save them to view them here.
+            You haven't saved any jobs yet. Search for jobs and save them to view them here. 
           </p>
           <Button onClick={handleSearchClick}>
             Search Jobs
