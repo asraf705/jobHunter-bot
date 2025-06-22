@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/router';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 import { motion } from 'framer-motion';
@@ -17,23 +17,10 @@ export default function Search() {
   const [isLoading, setIsLoading] = useState(false);
   const [jobs, setJobs] = useState<JobData[]>([]);
   const [error, setError] = useState('');
-  const { savedJobs, saveJob, isJobSaved } = useSavedJobs();
+  const { saveJob, isJobSaved } = useSavedJobs();
   const { addSearchQuery } = useSearchHistory();
 
-  // Initialize form with query params
-  useEffect(() => {
-    if (router.isReady) {
-      if (typeof keyword === 'string') setSearchKeyword(keyword);
-      if (typeof location === 'string') setSearchLocation(location);
-      
-      // If we have a keyword, search immediately
-      if (typeof keyword === 'string' && keyword.trim()) {
-        handleSearch(keyword, typeof location === 'string' ? location : '');
-      }
-    }
-  }, [router.isReady, keyword, location]);
-
-  const handleSearch = async (kw: string, loc: string) => {
+  const handleSearch = useCallback(async (kw: string, loc: string) => {
     if (!kw.trim()) return;
     
     setIsLoading(true);
@@ -75,7 +62,20 @@ export default function Search() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [addSearchQuery, setIsLoading, setError, setJobs]);
+
+  // Initialize form with query params
+  useEffect(() => {
+    if (router.isReady) {
+      if (typeof keyword === 'string') setSearchKeyword(keyword);
+      if (typeof location === 'string') setSearchLocation(location);
+      
+      // If we have a keyword, search immediately
+      if (typeof keyword === 'string' && keyword.trim()) {
+        handleSearch(keyword, typeof location === 'string' ? location : '');
+      }
+    }
+  }, [router.isReady, keyword, location, handleSearch]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -134,7 +134,7 @@ export default function Search() {
       ) : jobs.length > 0 ? (
         <div>
           <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
-            {jobs.length} Results for "{searchKeyword}"
+            {jobs.length} Results for &quot;{searchKeyword}&quot;
             {searchLocation && ` in ${searchLocation}`}
           </h2>
           <div className="space-y-4">
