@@ -1,4 +1,4 @@
-import { useState } from 'react';
+// No useState needed as we're using framer-motion for animations
 import { BookmarkIcon as BookmarkOutline } from '@heroicons/react/24/outline';
 import { BookmarkIcon as BookmarkSolid } from '@heroicons/react/24/solid';
 import { motion } from 'framer-motion';
@@ -20,7 +20,7 @@ interface JobCardProps {
 }
 
 const JobCard = ({ job, onSave, isSaved }: JobCardProps) => {
-  const [isHovered, setIsHovered] = useState(false);
+  // State is managed by framer-motion's whileHover instead of React state
 
   const handleSave = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -38,8 +38,7 @@ const JobCard = ({ job, onSave, isSaved }: JobCardProps) => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
       className="bg-white dark:bg-gray-800 rounded-xl shadow-app dark:shadow-app-dark overflow-hidden mb-4 transition-all duration-200"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      // Using framer-motion's built-in hover animations
       onClick={openJobLink}
       whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
